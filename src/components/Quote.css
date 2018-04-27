@@ -1,0 +1,9 @@
+.Quote {
+  flex-basis: 100%;
+  padding: 3rem 0;
+}
+
+.Quote-content {
+  display: flex;
+  justify-content: space-around;
+}

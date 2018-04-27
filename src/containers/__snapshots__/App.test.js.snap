@@ -17,11 +17,13 @@ exports[`renders without crashing 1`] = `
     <div
       class="App-content"
     >
-      <div>
-        <p>
-          This is where magic will happen...
-        </p>
-      </div>
+      <input
+        class="Input"
+        placeholder="Type to create a new quote..."
+      />
+      <div
+        class="App-loading"
+      />
     </div>
   </div>
 </div>
