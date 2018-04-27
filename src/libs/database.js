@@ -20,8 +20,14 @@ function quotesModel() {
 }
 function subscribeChildEvent(ref) {
   return function subscribeChildEvent(eventName, callback) {
-    ref.on(eventName, (childSnapshot) => {
-      const child = {...childSnapshot.val(), id: childSnapshot.key}
+    ref.orderByKey().limitToLast(10).on(eventName, (childSnapshot) => {
+      const currentUser = auth.currentUser()
+      const currentUserId = currentUser && currentUser.uid
+      const {likes={}, ...other} = childSnapshot.val()
+      const likeCount = Object.values(likes).filter(like => like).length
+      const liked = likes[currentUserId]
+
+      const child = {...other, liked,  likeCount, id: childSnapshot.key}
       return callback(child)
     })
   }
@@ -38,7 +44,6 @@ export function addQuote(quote) {
     .child('quotes')
     .child(newQuote.key)
     .set(true)
-
 }
 
 export function removeQuote(id) {
@@ -55,10 +60,28 @@ export function removeQuote(id) {
   quoteToRemove.remove()
 }
 
+export function toggleLike(quoteId) {
+  const currentUser = auth.currentUser()
+  if (!currentUser) return console.error('Should be authenticated')
+
+  const quoteLike = quotesRef()
+    .child(quoteId)
+    .child('likes')
+    .child(currentUser.uid)
+    .transaction(like => !like)
+
+  const userLike = usersRef()
+    .child(currentUser.uid)
+    .child('likes')
+    .child(quoteId)
+    .transaction(like => !like)
+}
+
 export default {
   quotesModel: quotesModel(),
   usersRef,
   addQuote,
   removeQuote,
+  toggleLike,
   disconnect,
 }

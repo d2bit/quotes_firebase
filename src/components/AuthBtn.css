@@ -3,7 +3,7 @@
   background-color: #eee;
   border: 1px solid black;
   border-radius: 3rem 0;
-  padding: 0 2rem;
+  padding: 0 1rem;
 }
 
 .AuthBtn-login {
@@ -14,4 +14,10 @@
   background-color: #e91e63;
   border-radius: 0 3rem;
   color: white;
+}
+
+@media (min-width: 550px) {
+  .AuthBtn {
+    padding: 0 2rem;
+  }
 }

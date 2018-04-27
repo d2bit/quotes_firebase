@@ -1,5 +1,5 @@
 import React from 'react'
-import database, {addQuote, removeQuote} from '../libs/database'
+import database, {addQuote, removeQuote, toggleLike} from '../libs/database'
 import auth from '../libs/auth'
 import QuoteList from '../components/QuoteList'
 import AuthBtn from '../components/AuthBtn'
@@ -29,9 +29,16 @@ class App extends React.PureComponent {
 
     const Quote = database.quotesModel
     Quote.subscribeChildEvent('child_added', newQuote => {
-      const quotes = [...this.state.quotes, newQuote]
+      const quotes = [newQuote, ...this.state.quotes]
 
       this.setState({isFetching: false, quotes})
+    })
+    Quote.subscribeChildEvent('child_changed', updatedQuote => {
+      const updatedQuotes = [...this.state.quotes]
+      const updatedIndex = updatedQuotes.findIndex(quote => quote.id === updatedQuote.id)
+      updatedQuotes[updatedIndex] = updatedQuote
+
+      this.setState({isFetching: false, quotes: updatedQuotes})
     })
     Quote.subscribeChildEvent('child_removed', removedQuote => {
       const quotes = this.state.quotes.filter(
@@ -65,7 +72,7 @@ class App extends React.PureComponent {
           <Input onEnter={addQuote} />
           {!isData && isFetching && <div className="App-loading" />}
           {isData &&
-            <QuoteList quotes={quotes} removeFn={removeQuote} />
+            <QuoteList quotes={quotes} removeFn={removeQuote} toggleLikeFn={toggleLike} />
           }
         </div>
       </div>

@@ -1,9 +1,66 @@
 .Quote {
   flex-basis: 100%;
-  padding: 3rem 0;
+  padding: 1rem 0;
+  display: flex;
+  flex-flow: row wrap;
+  min-height: 10rem;
+  justify-content: center;
 }
 
 .Quote-content {
   display: flex;
-  justify-content: space-around;
+  flex-flow: row wrap;
+  align-items: center;
+  flex-basis: 100%;
+  padding: 0 2rem;
+  min-height: 3rem;
+}
+
+.Quote-text {
+  flex-basis: 80%;
+  z-index: 10;
+  margin: 2rem 0;
+  font-size: 3rem;
+  font-weight: 200;
+}
+
+.Quote-like-info {
+  flex-basis: 20%;
+  position: relative;
+}
+
+.Quote-like-count {
+  position: absolute;
+  font-size: 2rem;
+  top: 10%;
+  right: 40%;
+  line-height: 0;
+  color: #fff;
+}
+
+.Quote-like {
+  fill: transparent;
+  stroke: #fff;
+  stroke-width: 0.1px;
+  width: 100%;
+}
+.Quote-like-on {
+  fill: #ff00006e;
+  stroke: #ff0000ba;
+}
+
+@media (min-width: 550px) {
+  .Quote {
+    min-height: 13rem;
+    justify-content: left;
+  }
+
+  .Quote-like {
+    right: 10%;
+    height: 25%;
+  }
+
+  .Quote-like-count {
+    font-size: 4rem;
+  }
 }
