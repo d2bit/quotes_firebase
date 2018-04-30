@@ -1,17 +1,3 @@
-const push = jest.fn(() => ({
-  key: 123,
-}))
-
-const usersRef = jest.fn(() => ({
-  child: usersRef,
-  push,
-  set: jest.fn(),
-}))
-const quotesRef = jest.fn(() => ({
-  child: quotesRef,
-  push: jest.fn(() => ({key: 1})),
-  set: jest.fn(),
-}))
 function refMock() {
   this.refCalls = []
   this.mocks = {}
@@ -35,10 +21,11 @@ function refMock() {
     addMock,
   }
 }
+
 function refCall(reference, mock) {
   this.reference = reference
   this.stackCall = []
-  this.mock = mock || { key: 123 }
+  this.mock = mock || {key: 123}
 
   const addChildCall = (...args) => {
     this.stackCall.push({
@@ -65,6 +52,7 @@ function refCall(reference, mock) {
     calls: this.stackCall,
     reference: this.reference,
   }
+
   return _ref
 }
 
