@@ -37,7 +37,7 @@ function database({getState, dispatch}) {
 
 function subscribeToQuoteEvents() {
   return (dispatch) => {
-    const Quote = db.quotesModel
+    const Quote = db.quotesModel()
     Quote.subscribeChildEvent('child_added', (newQuote) =>
       dispatch(addCreatedQuote(newQuote)),
     )

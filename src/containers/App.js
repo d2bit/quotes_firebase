@@ -15,7 +15,22 @@ import AuthBtn from '../components/AuthBtn'
 import Input from '../components/Input'
 import './App.css'
 
-class App extends React.PureComponent {
+export class App extends React.PureComponent {
+  static defaultProps = {
+    quotes: [],
+    isFetching: false,
+    uid: null,
+    error: null,
+    subscribeToFirebaseEvents: () => {},
+    unsubscribeFromFirebaseEvents: () => {},
+    addQuote: () => {},
+    removeQuote: () => {},
+    toggleLike: () => {},
+    authLoginRequest: () => {},
+    authLogoutRequest: () => {},
+    clearUIError: () => {},
+  }
+
   componentDidMount() {
     this.props.subscribeToFirebaseEvents()
   }
@@ -42,26 +57,33 @@ class App extends React.PureComponent {
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">QUOTES</h1>
-          <AuthBtn isAuth={isAuth} logInFn={authLoginRequest} logOutFn={authLogoutRequest} />
+          <AuthBtn
+            isAuth={isAuth}
+            logInFn={authLoginRequest}
+            logOutFn={authLogoutRequest}
+          />
         </header>
         <div className="App-content">
           <Input onEnter={addQuote} />
           {!isData && isFetching && <div className="App-loading" />}
-          {isData &&
-            <QuoteList quotes={quotes} removeFn={removeQuote} toggleLikeFn={toggleLike} />
-          }
+          {isData && (
+            <QuoteList
+              quotes={quotes}
+              removeFn={removeQuote}
+              toggleLikeFn={toggleLike}
+            />
+          )}
         </div>
       </div>
     )
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   quotes: state.quotes,
   isFetching: state.ui.isFetching,
   uid: state.auth.uid,
   error: state.ui.error,
-
 })
 const mapDispatchToProps = {
   subscribeToFirebaseEvents,

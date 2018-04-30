@@ -13,6 +13,11 @@ exports[`renders without crashing 1`] = `
       >
         QUOTES
       </h1>
+      <button
+        class="AuthBtn AuthBtn-login"
+      >
+        Login
+      </button>
     </header>
     <div
       class="App-content"
@@ -20,9 +25,6 @@ exports[`renders without crashing 1`] = `
       <input
         class="Input"
         placeholder="Type to create a new quote..."
-      />
-      <div
-        class="App-loading"
       />
     </div>
   </div>

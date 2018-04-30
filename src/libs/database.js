@@ -75,7 +75,7 @@ export function toggleLike(quoteId) {
 }
 
 export default {
-  quotesModel: quotesModel(),
+  quotesModel,
   usersRef,
   addQuote,
   removeQuote,
