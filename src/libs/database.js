@@ -7,7 +7,6 @@ function quotesRef() {
 function usersRef() {
   return db.ref('users')
 }
-
 export function disconnect() {
   db.off()
 }
@@ -20,14 +19,12 @@ function quotesModel() {
 }
 function subscribeChildEvent(ref) {
   return function subscribeChildEvent(eventName, callback) {
-    ref.orderByKey().limitToLast(10).on(eventName, (childSnapshot) => {
-      const currentUser = auth.currentUser()
-      const currentUserId = currentUser && currentUser.uid
-      const {likes={}, ...other} = childSnapshot.val()
-      const likeCount = Object.values(likes).filter(like => like).length
-      const liked = likes[currentUserId]
+    ref.on(eventName, (childSnapshot) => {
+      const {likes={}, ...props} = childSnapshot.val()
+      const likeList = Object.keys(likes).filter(uid => likes[uid])
+      const likeCount = likeList.length
 
-      const child = {...other, liked,  likeCount, id: childSnapshot.key}
+      const child = {...props, likes: likeList, likeCount, id: childSnapshot.key}
       return callback(child)
     })
   }
@@ -37,7 +34,7 @@ export function addQuote(quote) {
   const currentUser = auth.currentUser()
   if (!currentUser) return console.error('Should be authenticated')
 
-  const newQuote = quotesRef().push({quote})
+  const newQuote = quotesRef().push({quote, uid: currentUser.uid})
 
   usersRef()
     .child(currentUser.uid)
@@ -64,13 +61,13 @@ export function toggleLike(quoteId) {
   const currentUser = auth.currentUser()
   if (!currentUser) return console.error('Should be authenticated')
 
-  const quoteLike = quotesRef()
+  quotesRef()
     .child(quoteId)
     .child('likes')
     .child(currentUser.uid)
     .transaction(like => !like)
 
-  const userLike = usersRef()
+  usersRef()
     .child(currentUser.uid)
     .child('likes')
     .child(quoteId)

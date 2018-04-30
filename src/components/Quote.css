@@ -12,6 +12,7 @@
   flex-flow: row wrap;
   align-items: center;
   flex-basis: 100%;
+  position: relative;
   padding: 0 2rem;
   min-height: 3rem;
 }
@@ -47,6 +48,13 @@
 .Quote-like-on {
   fill: #ff00006e;
   stroke: #ff0000ba;
+}
+.Quote-deleteBtn {
+  position: absolute;
+  top: 0;
+  border: 1px solid black;
+  padding: 0.2rem 0.5rem;
+  font-size: 1rem;
 }
 
 @media (min-width: 550px) {

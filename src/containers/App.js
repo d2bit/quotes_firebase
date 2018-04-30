@@ -1,72 +1,48 @@
 import React from 'react'
-import database, {addQuote, removeQuote, toggleLike} from '../libs/database'
-import auth from '../libs/auth'
+import {connect} from 'react-redux'
+import {
+  authLoginRequest,
+  authLogoutRequest,
+  subscribeToFirebaseEvents,
+  unsubscribeFromFirebaseEvents,
+  addQuote,
+  removeQuote,
+  toggleLike,
+  clearUIError,
+} from '../actions'
 import QuoteList from '../components/QuoteList'
 import AuthBtn from '../components/AuthBtn'
 import Input from '../components/Input'
 import './App.css'
 
 class App extends React.PureComponent {
-  state = {
-    isFetching: true,
-    quotes: [],
-    isAuth: undefined,
-    user: null,
-  }
-
   componentDidMount() {
-    this.connectToDatabase()
+    this.props.subscribeToFirebaseEvents()
   }
   componentWillUnMount() {
-    database.disconnect()
-  }
-
-  connectToDatabase = () => {
-    auth.subscribeEvent(currentUser => {
-      const isAuth = !!currentUser
-      this.setState({ isAuth, user: currentUser })
-    })
-
-    const Quote = database.quotesModel
-    Quote.subscribeChildEvent('child_added', newQuote => {
-      const quotes = [newQuote, ...this.state.quotes]
-
-      this.setState({isFetching: false, quotes})
-    })
-    Quote.subscribeChildEvent('child_changed', updatedQuote => {
-      const updatedQuotes = [...this.state.quotes]
-      const updatedIndex = updatedQuotes.findIndex(quote => quote.id === updatedQuote.id)
-      updatedQuotes[updatedIndex] = updatedQuote
-
-      this.setState({isFetching: false, quotes: updatedQuotes})
-    })
-    Quote.subscribeChildEvent('child_removed', removedQuote => {
-      const quotes = this.state.quotes.filter(
-        (quote) => quote.id !== removedQuote.id,
-      )
-
-      this.setState({isFetching: false, quotes})
-    })
-  }
-
-  login() {
-    auth.signInWithGoggle()
-  }
-  logout() {
-    auth.signOut()
+    this.props.unsubscribeFromFirebaseEvents()
   }
 
   render() {
-    const {isAuth, isFetching, quotes} = this.state
+    const {quotes, isFetching} = this.props
     const isData = quotes.length > 0
+    const {uid} = this.props
+    const isAuth = !!uid
+    const {addQuote, removeQuote, toggleLike} = this.props
+    const {authLoginRequest, authLogoutRequest} = this.props
+    const {error, clearUIError} = this.props
+
+    if (error) {
+      //TODO show error in modal
+      console.log(error)
+      setTimeout(clearUIError, 100)
+    }
 
     return (
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">QUOTES</h1>
-          { isAuth !== undefined &&
-            <AuthBtn isAuth={isAuth} logInFn={this.login} logOutFn={this.logout} />
-          }
+          <AuthBtn isAuth={isAuth} logInFn={authLoginRequest} logOutFn={authLogoutRequest} />
         </header>
         <div className="App-content">
           <Input onEnter={addQuote} />
@@ -80,4 +56,21 @@ class App extends React.PureComponent {
   }
 }
 
-export default App
+const mapStateToProps = state => ({
+  quotes: state.quotes,
+  isFetching: state.ui.isFetching,
+  uid: state.auth.uid,
+  error: state.ui.error,
+
+})
+const mapDispatchToProps = {
+  subscribeToFirebaseEvents,
+  unsubscribeFromFirebaseEvents,
+  addQuote,
+  removeQuote,
+  toggleLike,
+  authLoginRequest,
+  authLogoutRequest,
+  clearUIError,
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App)
